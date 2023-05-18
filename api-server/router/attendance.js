@@ -4,6 +4,7 @@ const router = express.Router();
 
 const attendanceHandler = require('../router_handler/attendance')
 router.get('/attendanceList',attendanceHandler.attendanceList)
+router.post('/getAttendanceListByAccount',attendanceHandler.getAttendanceListByAccount)
 
 // router.get('/list', userHandler.list)
 // router.post('/add', userHandler.add)

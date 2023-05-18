@@ -16,13 +16,20 @@ const routes = [
         component: () => import("../views/Account.vue"),
       },
       {
-        path: "/userinfo",
-        component: () => import("../views/UserInfo.vue"),
+        // 我的考勤
+        path: "/myAttendance",
+        name: "myAttendance",
+        component: () => import("../views/MyAttendance.vue"),
       },
       {
+        // 考勤管理
         path: "/attendance",
         name: "attendance",
         component: () => import("../views/Attendance.vue"),
+      },
+      {
+        path: "/userinfo",
+        component: () => import("../views/UserInfo.vue"),
       },
       {
         path: "/user",

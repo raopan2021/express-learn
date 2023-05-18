@@ -2,8 +2,8 @@
     <div class="login">
         <el-form class="login-form" :model="loginForm" ref="loginForm" :rules="rules">
             <h3 class="title">考勤管理系统-登录</h3>
-            <el-form-item prop="no">
-                <el-input placeholder="账号" type="text" prefix-icon="el-icon-user-solid" v-model="loginForm.no">
+            <el-form-item prop="account">
+                <el-input placeholder="账号" type="text" prefix-icon="el-icon-user-solid" v-model="loginForm.account">
                 </el-input>
             </el-form-item>
             <el-form-item prop="password">
@@ -37,7 +37,7 @@ export default {
     data () {
         return {
             loginForm: {
-                no: '',
+                account: '',
                 password: '',
                 checkCode: '',
                 rememberme: null,
@@ -48,8 +48,8 @@ export default {
             redirect: undefined,
 
             rules: {
-                no: [
-                    { required: true,message: "用户名不能为空",trigger: "blur" },
+                account: [
+                    { required: true,message: "用户工号不能为空",trigger: "blur" },
                     { min: 2,max: 30,message: "长度在 2 到 30 个字符",trigger: "blur" }
                 ],
                 password: [
@@ -70,9 +70,12 @@ export default {
         }
     },
     beforeMount () {
-        let username = localStorage.getItem('username')
-        if (username) {
-            this.loginForm.no = username
+        // 获取验证码图片
+        this.getCode();
+
+        let account = localStorage.getItem('account')
+        if (account) {
+            this.loginForm.account = account
         }
         let rememberme = localStorage.getItem('rememberme')
         if (rememberme) {
@@ -93,7 +96,7 @@ export default {
                                 const decode = jwt_decode(token)
                                 // console.log(decode)
                                 const userInfo = {
-                                    no: decode.no,
+                                    account: decode.account,
                                     name: decode.name,
                                     token
                                 }
@@ -101,7 +104,7 @@ export default {
                                 this.$store.commit('setUser',userInfo)
 
                                 if (this.loginForm.rememberme) {
-                                    localStorage.setItem('username',this.loginForm.no)
+                                    localStorage.setItem('account',this.loginForm.account)
                                     localStorage.setItem('rememberme',this.loginForm.rememberme)
                                 }
 
@@ -113,6 +116,8 @@ export default {
                                 this.$router.push({ path: this.redirect || '/' })
                             })
                             .catch(err => {
+                                // this.getCode();
+                                // 获取验证码图片
                                 console.log(err)
                                 this.$message.error('登录失败，请检查用户名及密码是否正确！')
                             })
@@ -146,9 +151,6 @@ export default {
                 })
         },
     },
-    created () {
-        this.getCode()
-    }
 }
 </script>
 

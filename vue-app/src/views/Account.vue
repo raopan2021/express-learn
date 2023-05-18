@@ -3,23 +3,17 @@
         <div class="search" style="margin-bottom: 5px">
             <el-input placeholder="请输入姓名" style="width: 200px" suffix-icon="el-icon-search" v-model="searchContent"
                 @keyup.enter.native="handleSearch"></el-input>
-            <el-select v-model="sex" placeholder="请选择" style="margin-left: 5px; width: 200px">
+            <el-select v-model="sex" placeholder="请选择性别" style="margin-left: 5px; width: 200px">
                 <el-option v-for="item in sexs" :key="item.value" :label="item.label" :value="item.value">
                 </el-option>
             </el-select>
             <el-button type="primary" style="margin-left: 5px" size="small" @click="handleSearch">搜索</el-button>
             <el-button type="success" style="margin-left: 5px" size="small" @click="handleReset">重置</el-button>
-
             <el-button type="primary" style="margin-left: 5px" size="small" @click="handleAdd" round>新增</el-button>
-
         </div>
         <el-table :data="tableData" :header-cell-style="{ background: '#f3f6fd', color: '#555' }" border>
-            <el-table-column prop="id" label="ID" width="70">
-            </el-table-column>
-            <el-table-column prop="no" label="账号">
-            </el-table-column>
-            <el-table-column prop="name" label="姓名">
-            </el-table-column>
+            <el-table-column prop="name" label="姓名"> </el-table-column>
+            <el-table-column prop="account" label="职工工号"> </el-table-column>
             <el-table-column prop="role_id" label="角色">
                 <template slot-scope="scope">
                     <el-tag :type="scope.row.role_id === 0 ? 'danger' : (scope.row.role_id === 1 ? 'primary' : 'success')"
@@ -29,18 +23,9 @@
                         }}</el-tag>
                 </template>
             </el-table-column>
-            <el-table-column prop="sex" label="性别">
-                <template slot-scope="scope">
-                    <el-tag :type="scope.row.sex === 1 ? 'primary' : 'success'" disable-transitions>{{
-                        scope.row.sex ===
-                        1 ? '男' : '女'
-                    }}</el-tag>
-                </template>
-            </el-table-column>
-            <el-table-column prop="age" label="年龄">
-            </el-table-column>
-            <el-table-column prop="phone" label="电话">
-            </el-table-column>
+            <el-table-column prop="sex" label="性别"></el-table-column>
+            <el-table-column prop="age" label="年龄"> </el-table-column>
+            <el-table-column prop="phone" label="电话"> </el-table-column>
             <el-table-column prop="operate" label="操作">
                 <template slot-scope="scope">
                     <el-button type="primary" icon="el-icon-edit-outline" title="编辑" size="small"
@@ -61,14 +46,14 @@
 
         <el-dialog :title="title" :visible.sync="centerDialogVisible" width="30%" center>
             <el-form ref="form" :model="form" label-width="100px" :rules="rules">
-                <el-form-item label="账号" prop="no">
-                    <el-col :span="20">
-                        <el-input v-model="form.no" :disabled="isAbled"></el-input>
-                    </el-col>
-                </el-form-item>
                 <el-form-item label="姓名" prop="name">
                     <el-col :span="20">
                         <el-input v-model="form.name"></el-input>
+                    </el-col>
+                </el-form-item>
+                <el-form-item label="职工工号" prop="account">
+                    <el-col :span="20">
+                        <el-input v-model="form.account" :disabled="isAbled"></el-input>
                     </el-col>
                 </el-form-item>
                 <el-form-item label="密码" prop="password">
@@ -83,8 +68,8 @@
                 </el-form-item>
                 <el-form-item label="性别">
                     <el-radio-group v-model="form.sex">
-                        <el-radio label="1">男</el-radio>
-                        <el-radio label="2">女</el-radio>
+                        <el-radio label="男">男</el-radio>
+                        <el-radio label="女">女</el-radio>
                     </el-radio-group>
                 </el-form-item>
                 <el-form-item label="电话" prop="phone">
@@ -119,23 +104,23 @@ export default {
             searchContent: '',
             sex: '',
             sexs: [
-                { value: 1,label: '男' },
-                { value: 2,label: '女' },
+                { value: '男',label: '男' },
+                { value: '女',label: '女' },
 
             ],
             centerDialogVisible: false,
             form: {
-                no: '',
+                account: '',
                 name: '',
                 password: '',
                 age: '',
                 phone: '',
-                sex: '1',
+                sex: '男',
                 role_id: '2',
                 id: ''
             },
             rules: {
-                no: [
+                account: [
                     { required: true,message: '请输入账号',trigger: 'blur' },
                     { min: 2,max: 10,message: '长度在2-10个字符',trigger: 'blur' }
                 ],
@@ -148,11 +133,11 @@ export default {
                     { min: 3,max: 10,message: '长度在3-10个字符',trigger: 'blur' }
                 ],
                 age: [
-                    { required: true,message: '请输入年龄',trigger: 'blur' },
+                    { required: false,message: '请输入年龄',trigger: 'blur' },
                     { pattern: /^(?:[1-9][0-9]?|1[01][0-9]|120)$/,message: '请输入正确的年龄',trigger: 'blur' }
                 ],
                 phone: [
-                    { required: true,message: '请输入手机号',trigger: 'blur' },
+                    { required: false,message: '请输入手机号',trigger: 'blur' },
                     { pattern: /^1[3-9]\d{9}$/,message: '请输入正确的手机号',trigger: 'blur' }
                 ]
             },
@@ -181,8 +166,8 @@ export default {
             this.isAbled = true
             this.title = '编辑用户'
             this.form = row
-            this.form.sex = row.sex.toString()
-            this.form.password = ''
+            this.form.sex = row.sex
+            this.form.password = row.password
 
         },
         handleDelete (index,row) {
@@ -307,7 +292,7 @@ export default {
                         })
                         .catch(err => {
                             this.$message.error('操作失败，请更换账号重试！')
-                            this.form.no = ''
+                            this.form.account = ''
                         })
                 } else {
                     this.$message.warning('请输入有效的数据')
@@ -318,12 +303,12 @@ export default {
         // 重置表单中的内容
         resetForm () {
             this.form = {
-                no: '',
+                account: '',
                 name: '',
                 password: '',
                 age: '',
                 phone: '',
-                sex: '1'
+                sex: '男'
             }
             // this.$refs.form.resetFields()
         }

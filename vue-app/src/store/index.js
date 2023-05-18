@@ -9,7 +9,7 @@ export default new Vuex.Store({
     asideWidth: "200px",
     iconDirection: "el-icon-s-fold",
     userInfo: {
-      no: "",
+      account: "",
       name: "",
       token: "",
     },
