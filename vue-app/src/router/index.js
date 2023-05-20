@@ -6,31 +6,43 @@ Vue.use(VueRouter);
 const routes = [
   {
     path: "/",
-    redirect: "/account",
+    redirect: "/myAttendance",
     component: () => import("../views/Main.vue"),
     children: [
+      {
+        // 我的考勤
+        path: "/myAttendance",
+        name: "myAttendance",
+        component: () => import("../views/Attendance/MyAttendance/MyAttendance.vue"),
+      },
+      {
+        // 考勤管理
+        path: "/attendanceManagement",
+        name: "attendanceManagement",
+        component: () => import("../views/Attendance/AttendanceManagement.vue"),
+      },
+      {
+        // 我的考勤
+        path: "/myEvection",
+        name: "myEvection",
+        component: () => import("../views/MyEvection.vue"),
+      },
+      {
+        // 我的考勤
+        path: "/myOvertime",
+        name: "myOvertime",
+        component: () => import("../views/MyOvertime.vue"),
+      },
       {
         // 账号管理
         path: "/account",
         name: "account",
         component: () => import("../views/Account.vue"),
       },
-      {
-        // 我的考勤
-        path: "/myAttendance",
-        name: "myAttendance",
-        component: () => import("../views/MyAttendance.vue"),
-      },
-      {
-        // 考勤管理
-        path: "/attendance",
-        name: "attendance",
-        component: () => import("../views/Attendance.vue"),
-      },
-      {
-        path: "/userinfo",
-        component: () => import("../views/UserInfo.vue"),
-      },
+      // {
+      //   path: "/userinfo",
+      //   component: () => import("../views/UserInfo.vue"),
+      // },
       {
         path: "/user",
         name: "user",
@@ -38,19 +50,6 @@ const routes = [
       },
     ],
   },
-  // {
-  //   path: "/home",
-  //   name: "home",
-  //   component: () => import("../components/Index.vue"),
-  //   // chirdren:[
-  //   //   {
-  //   //     path: '/userinfo',
-  //   //     name: 'userinfo',
-  //   //     meta: '首页'
-  //   //     // component
-  //   //   }
-  //   // ]
-  // },
   {
     path: "/login",
     name: "login",

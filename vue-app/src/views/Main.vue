@@ -20,7 +20,7 @@
 
 <script>
 import Aside from '../components/Aside.vue';
-import Header from '../components/Header.vue'
+import Header from '../components/Header.vue';
 export default {
     data () {
         return {
@@ -48,7 +48,7 @@ export default {
 }
 
 .el-main {
-    padding: 5px;
+    padding: 20px;
 }
 
 .el-aside {

@@ -40,7 +40,7 @@ export default {
                 account: '',
                 password: '',
                 checkCode: '',
-                rememberme: null,
+                rememberme: true,
             },
             codeUrl: '',
             code: '',
@@ -89,18 +89,15 @@ export default {
                     if (this.loginForm.checkCode.toLowerCase() == this.codeText.toLowerCase()) {
                         this.$axios.post('/user/login',this.loginForm)
                             .then(res => {
-                                // console.log(res)
                                 const { token } = res.data
                                 localStorage.setItem('wmstoken',token)
 
                                 const decode = jwt_decode(token)
-                                // console.log(decode)
                                 const userInfo = {
                                     account: decode.account,
                                     name: decode.name,
                                     token
                                 }
-                                // console.log(userInfo)
                                 this.$store.commit('setUser',userInfo)
 
                                 if (this.loginForm.rememberme) {
