@@ -32,7 +32,7 @@ export default {
         account: this.$store.state.userInfo.account,
         currentPage: this.currentPage,
         pageSize: this.pageSize
-      }
+      };
       this.$axios.post('/attendance/getUserAttendanceList',query)
         .then(res => {
           if (res.data.status === 200) {

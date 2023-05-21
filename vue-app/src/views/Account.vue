@@ -1,10 +1,10 @@
 <template>
     <div>
         <div class="search" style="margin-bottom: 5px">
-            <el-input placeholder="请输入姓名" style="width: 200px" suffix-icon="el-icon-search" v-model="searchContent"
-                @keyup.enter.native="handleSearch"></el-input>
-            <el-select v-model="sex" placeholder="请选择性别" style="margin-left: 5px; width: 200px">
-                <el-option v-for="item in sexs" :key="item.value" :label="item.label" :value="item.value">
+            <el-input placeholder="请输入姓名" style="width: 200px" suffix-icon="el-icon-search" v-model="searchUserName"
+                @keyup.enter.native="handleSearch" clearable></el-input>
+            <el-select v-model="searchUserLevel" placeholder="请选择职级" clearable style="margin-left: 5px; width: 200px">
+                <el-option v-for="item in levelOption" :key="item.value" :label="item.label" :value="item.value">
                 </el-option>
             </el-select>
             <el-button type="primary" style="margin-left: 5px" size="small" @click="handleSearch">搜索</el-button>
@@ -12,8 +12,9 @@
             <el-button type="primary" style="margin-left: 5px" size="small" @click="handleAdd" round>新增</el-button>
         </div>
         <el-table :data="tableData" :header-cell-style="{ background: '#f3f6fd', color: '#555' }" border>
-            <el-table-column prop="name" label="姓名"> </el-table-column>
-            <el-table-column prop="account" label="职工工号"> </el-table-column>
+            <el-table-column prop="name" label="姓名"></el-table-column>
+            <el-table-column prop="account" label="职工工号"></el-table-column>
+            <el-table-column prop="level" label="职级"></el-table-column>
             <el-table-column prop="role_id" label="角色">
                 <template slot-scope="scope">
                     <el-tag :type="scope.row.role_id === 0 ? 'danger' : (scope.row.role_id === 1 ? 'primary' : 'success')"
@@ -38,13 +39,13 @@
         </el-table>
         <!-- 分页 -->
         <div class="pagination">
-            <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"
-                :current-page.sync="paginations.page_index" :page-sizes="paginations.page_sizes"
-                :page-size="paginations.page_size" :layout="paginations.layout" :total="paginations.total">
+            <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage"
+                :page-sizes="[10, 20, 50, 100]" :page-size="pageSize" layout="total, sizes, prev, pager, next, jumper"
+                :total="total">
             </el-pagination>
         </div>
 
-        <el-dialog :title="title" :visible.sync="centerDialogVisible" width="30%" center>
+        <el-dialog :title="title" :visible.sync="dialogVisible" width="30%" center>
             <el-form ref="form" :model="form" label-width="100px" :rules="rules">
                 <el-form-item label="姓名" prop="name">
                     <el-col :span="20">
@@ -53,7 +54,16 @@
                 </el-form-item>
                 <el-form-item label="职工工号" prop="account">
                     <el-col :span="20">
-                        <el-input v-model="form.account" :disabled="isAbled"></el-input>
+                        <el-input v-model="form.account"></el-input>
+                    </el-col>
+                </el-form-item>
+                <el-form-item label="职级" prop="levelOption">
+                    <el-col :span="20">
+                        <el-select v-model="form.level" placeholder="请选择职级" clearable>
+                            <el-option v-for="item in levelOption" :key="item.value" :label="item.label"
+                                :value="item.value">
+                            </el-option>
+                        </el-select>
                     </el-col>
                 </el-form-item>
                 <el-form-item label="密码" prop="password">
@@ -80,7 +90,7 @@
 
             </el-form>
             <span slot="footer" class="dialog-footer">
-                <el-button @click="centerDialogVisible = false" size="small">取 消</el-button>
+                <el-button @click="dialogVisible = false" size="small">取 消</el-button>
                 <el-button type="primary" @click="submitForm('form')" size="small">确 定</el-button>
             </span>
         </el-dialog>
@@ -92,29 +102,28 @@ export default {
     data () {
         return {
             tableData: [],
-            allTableData: [],  // 存放所有表格数据以及搜索后的数据
-            filterTableData: [],  // 存放所有表格数据供搜索
-            paginations: {
-                page_index: 1,  // 当前页
-                total: 0,  // 总数
-                page_size: 10,  // 默认每页显示多少条
-                page_sizes: [5,10,15,20],  // 选择每页显示多少条
-                layout: "total, sizes, prev, pager, next, jumper"
-            },
-            searchContent: '',
-            sex: '',
-            sexs: [
-                { value: '男',label: '男' },
-                { value: '女',label: '女' },
-
+            total: 0, // 总数
+            pageSize: 10, // 每页几条数据
+            currentPage: 1, // 当前是第几页
+            searchUserName: '',
+            searchUserLevel: '',
+            levelOption: [
+                { value: '青铜',label: '青铜' },
+                { value: '白银',label: '白银' },
+                { value: '黄金',label: '黄金' },
+                { value: '铂金',label: '铂金' },
+                { value: '钻石',label: '钻石' },
+                { value: '星耀',label: '星耀' },
+                { value: '王者',label: '王者' },
             ],
-            centerDialogVisible: false,
+            dialogVisible: false,
             form: {
                 account: '',
                 name: '',
                 password: '',
                 age: '',
                 phone: '',
+                level: '',
                 sex: '男',
                 role_id: '2',
                 id: ''
@@ -143,32 +152,59 @@ export default {
             },
             title: '新增用户',
             operateType: 'add',
-            isAbled: false,
         }
+    },
+    beforeMount () {
+        this.$store.commit('setHeaderTitle',"账号管理")
+        this.getUser()
     },
     methods: {
         getUser () {
-            this.$axios.get('/user/list')
+            this.tableData = [];
+            let query = {
+                currentPage: this.currentPage,
+                pageSize: this.pageSize,
+                searchUserName: this.searchUserName,
+                searchUserLevel: this.searchUserLevel,
+            };
+            this.$axios.post('/user/list',query)
                 .then(res => {
                     if (res.data.status === 200) {
-                        // this.tableData = res.data.results
-                        this.allTableData = res.data.results
-                        this.filterTableData = res.data.results
-                        this.setPaginations()
+                        this.tableData = res.data.results;
+                        this.total = res.data.total;
                     }
-                    // console.log(res)
                 })
         },
+        // 每页条数
+        handleSizeChange (e) {
+            this.pageSize = e;
+            this.getUser();
+        },
+        // 第几页
+        handleCurrentChange (e) {
+            this.currentPage = e;
+            this.getUser();
+        },
+        // 搜索
+        handleSearch () {
+            this.getUser()
+        },
+        // 重置按钮
+        handleReset () {
+            this.searchUserName = ''
+            this.searchUserLevel = ''
+            this.getUser()
+        },
+
         handleEdit (index,row) {
             // console.log(row)
             this.operateType = 'mod'
-            this.centerDialogVisible = true
-            this.isAbled = true
+            this.dialogVisible = true
             this.title = '编辑用户'
             this.form = row
             this.form.sex = row.sex
             this.form.password = row.password
-
+            this.form.level = row.level
         },
         handleDelete (index,row) {
             this.$confirm('此操作将永久删除该用户，是否继续？',"提示",{
@@ -187,92 +223,12 @@ export default {
             })
         },
 
-        // 分页相关函数
-        setPaginations () {
-            this.paginations.total = this.allTableData.length
-            this.paginations.page_index = 1
-            this.tableData = this.allTableData.filter((item,index) => index < this.paginations.page_size)
-            // console.log(this.allTableData[0])
-
-        },
-        handleSizeChange (page_size) {
-            this.paginations.page_index = 1
-            this.paginations.page_size = page_size
-            this.tableData = this.allTableData.filter((item,index) => {
-                return index < page_size
-            })
-
-        },
-        // 页面跳转
-        handleCurrentChange (page) {
-            const index = this.paginations.page_size * (page - 1)
-            const nums = this.paginations.page_size * page
-            const tables = []
-            for (let i = index; i < nums; i++) {
-                if (this.allTableData[i]) tables.push(this.allTableData[i])
-            }
-            this.tableData = tables
-        },
-
-        // 搜索
-        handleSearch () {
-            if (!this.searchContent && !this.sex) {
-                this.$message({ type: 'warning',message: '请输入用户姓名或性别进行查询' })
-                this.getUser()
-                return
-            }
-            // 这里有两种方法可以实现通过姓名的模糊查询
-            // 第一种，在返回的数据中，通过filter函数模糊查询，使用filter中的includes方法实现模糊查询
-            // 加入性别后，这里的查询显得有点啰嗦了，后面还需要改进
-            if (this.searchContent && this.sex) {
-                this.allTableData = this.filterTableData.filter((item,index) => {
-                    return item.name.includes(this.searchContent) && item.sex === this.sex
-                })
-                this.setPaginations()
-            }
-            if (this.searchContent && !this.sex) {
-                this.allTableData = this.filterTableData.filter((item,index) => {
-                    return item.name.includes(this.searchContent)
-                })
-                this.setPaginations()
-            }
-            if (!this.searchContent && this.sex) {
-                this.allTableData = this.filterTableData.filter((item,index) => {
-                    return item.sex === this.sex
-                })
-                this.setPaginations()
-            }
-
-
-            // 第二种，后端写了模糊查询的接口，接口为/user/searchByName，然后传递name参数，注意，这里之前使用的get请求，
-            // 后来发现get请求不适用于传参的请求，改成post请求后就可以正常获取数据了，
-            // 由于还有一个是通过性别来查询，我在后端没有写性别查询的接口，所以这里就使用第一种查询方法了
-            // this.$axios.post('/user/searchByName', { name: this.searchContent })
-            //     .then(res => {
-            //         if (res.data.status === 200) {
-            //             this.allTableData = res.data.results
-            //             this.setPaginations()
-            //         } else {
-            //             this.$message.warning('请求数据出错')
-            //         }
-            //     })
-        },
-
-        // 重置按钮的点击函数
-        handleReset () {
-            this.searchContent = ''
-            this.sex = ''
-            this.getUser()
-        },
-
         // 新增按钮的点击函数
         handleAdd () {
-            this.centerDialogVisible = true
+            this.dialogVisible = true
             this.operateType = 'add'
-            this.isAbled = false
             this.resetForm()
         },
-
 
         // 提交新增或编辑按钮的回调函数
         submitForm (formName) {
@@ -283,7 +239,7 @@ export default {
                         .then(res => {
                             if (res.data.status === 200) {
                                 this.$message.success('操作成功!')
-                                this.centerDialogVisible = false
+                                this.dialogVisible = false
                                 this.resetForm()
                                 this.getUser()
                             } else {
@@ -308,17 +264,11 @@ export default {
                 password: '',
                 age: '',
                 phone: '',
-                sex: '男'
+                sex: '男',
+                level: '',
             }
             // this.$refs.form.resetFields()
         }
-
-    },
-    beforeMount () {
-        this.$store.commit('setHeaderTitle',"账号管理")
-    },
-    created () {
-        this.getUser()
     },
 }
 </script>

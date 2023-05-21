@@ -4,12 +4,40 @@ const config = require("../config");
 const jwt = require("jsonwebtoken");
 
 exports.list = (req,res) => {
-  const sql = "select * from user";
-  db.query(sql,(err,results) => {
+  const searchUserName = req.body.searchUserName,
+    searchUserLevel = req.body.searchUserLevel,
+    currentPage = req.body.currentPage,
+    pageSize = req.body.pageSize;
+  // 从第n条开始
+  const start = (currentPage - 1) * pageSize;
+
+  // 查询表格的sl
+  let tableSql = ` select * from user `
+  if (searchUserName != '') {
+    tableSql += `where name like "%${searchUserName}%" `
+  }
+  if (searchUserLevel != '') {
+    if (searchUserName != '') {
+      tableSql += `and where level = "${searchUserLevel}"`
+    } else {
+      tableSql += `where level = "${searchUserLevel}"`
+    }
+  }
+  tableSql += ` order by name desc limit ${start} , ${pageSize} ;`;
+  console.log(tableSql);
+
+  // 查询总数的sql
+  const totalSql = ` select count(*) as total from user; `;
+
+  db.query(tableSql,(err,tableResults) => {
     if (err) return res.status(400).json(err);
-    res.json({
-      status: 200,
-      results,
+    db.query(totalSql,(err,TotalResults) => {
+      if (err) return res.status(400).json(err);
+      res.json({
+        status: 200,
+        results: tableResults,
+        total: TotalResults[0].total
+      });
     });
   });
 };

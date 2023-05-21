@@ -58,7 +58,6 @@ exports.overtimeList = (req,res) => {
 
 // 查询用户的加班记录分页
 exports.getUserOvertimeList = (req,res) => {
-  console.log(req);
   if (!req.body.account) return res.status(400).json("请求体中无账号account");
   const account = req.body.account,
     currentPage = req.body.currentPage,
