@@ -23,6 +23,10 @@ app.use('/api/evection',evectionRouter)
 const overtimeRouter = require('./router/overtime')
 app.use('/api/overtime',overtimeRouter)
 
+// 其他
+const otherRouter = require('./router/other')
+app.use('/api/other',otherRouter)
+
 app.listen(3018,() => {
     console.log('api server running at http://127.0.0.1:3018')
 })

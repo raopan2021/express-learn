@@ -28,7 +28,6 @@ exports.attendanceList = (req,res) => {
       attendance ; 
     `;
   db.query(tableSql,[start,pageSize],(err,tableResults) => {
-    console.log(tableResults);
     if (err) return res.status(400).json(err);
     db.query(totalSql,(err,totalResults) => {
       if (err) return res.status(400).json(err);
@@ -60,7 +59,6 @@ exports.getUserAttendanceByYearMonth = (req,res) => {
       a.time;
   `;
   db.query(sql,[account,year,month],(err,results) => {
-    console.log(results);
     if (err) return res.status(400).json(err);
     res.json({
       status: 200,
@@ -108,3 +106,5 @@ exports.getUserAttendanceList = (req,res) => {
     });
   });
 };
+
+// 向第三方api获取节假日
