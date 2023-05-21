@@ -1,9 +1,9 @@
 <template>
   <el-calendar v-if="userAttendanceList != []" :first-day-of-week="7" v-model="value">
     <template slot="dateCell" slot-scope="{date, data}">
-      <span :class="data.isSelected ? 'is-selected' : ''">
+      <p :class="data.isSelected ? 'is-selected' : ''">
         {{ data.day.split('-').slice(2).join('-') }}
-      </span>
+      </p>
       <span v-if="holiday != []" style="color:rgb(41, 158, 125)">{{ formateHoliday(data) }}</span>
       <el-tag v-for=" item  in  formatedate(data) ">{{ item }}</el-tag>
     </template>
