@@ -1,5 +1,11 @@
 <template>
   <div>
+    <div class="search" style="margin-bottom: 5px">
+      <el-input placeholder="请输入姓名" style="width: 200px" suffix-icon="el-icon-search" v-model="searchUserName"
+        @keyup.enter.native="handleSearch" clearable></el-input>
+      <el-button type="primary" style="margin-left: 5px" size="small" @click="handleSearch">搜索</el-button>
+      <el-button type="success" style="margin-left: 5px" size="small" @click="handleReset">重置</el-button>
+    </div>
     <el-table :data="tableData" width="100%" :header-cell-style="{ background: '#f3f6fd', color: '#555' }" border>
       <el-table-column prop="username" label="姓名"></el-table-column>
       <el-table-column prop="account" label="职工工号"></el-table-column>
@@ -24,6 +30,7 @@
 export default {
   data () {
     return {
+      searchUserName: '',
       tableData: [],
       total: 0, // 总数
       pageSize: 10, // 每页几条数据
@@ -31,20 +38,19 @@ export default {
     }
   },
   beforeMount () {
-    this.$store.commit('setHeaderTitle',"我的出差");
+    this.$store.commit('setHeaderTitle',"出差管理");
     this.getEvectionList()
   },
   methods: {
     getEvectionList () {
       let query = {
-        account: this.$store.state.userInfo.account,
+        searchUserName: this.searchUserName,
         currentPage: this.currentPage,
         pageSize: this.pageSize
       }
       this.$axios.post('/evection/getUserEvectionList',query)
         .then(res => {
           if (res.data.status === 200) {
-            console.log(res);
             this.tableData = res.data.results;
             this.total = res.data.total;
           }
@@ -52,11 +58,20 @@ export default {
     },
     handleSizeChange (e) {
       this.pageSize = e;
-      this.getUserEvectionList();
+      this.getEvectionList();
     },
     handleCurrentChange (e) {
       this.currentPage = e;
-      this.getUserEvectionList();
+      this.getEvectionList();
+    },
+    // 搜索
+    handleSearch () {
+      this.getEvectionList()
+    },
+    // 重置按钮
+    handleReset () {
+      this.searchUserName = ''
+      this.getEvectionList()
     },
   },
 }

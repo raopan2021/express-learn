@@ -15,6 +15,11 @@ export default {
         return {
             menuList: [
                 {
+                    index: '/userManage',
+                    iconClass: 'el-icon-user',
+                    title: '个人首页'
+                },
+                {
                     index: '/myAttendance',
                     iconClass: 'el-icon-position',
                     title: '我的考勤'
@@ -25,14 +30,24 @@ export default {
                     title: '考勤管理'
                 },
                 {
+                    index: '/myOvertime',
+                    iconClass: 'el-icon-s-flag',
+                    title: '我的加班'
+                },
+                {
+                    index: '/overtimeManagement',
+                    iconClass: 'el-icon-s-flag',
+                    title: '加班管理'
+                },
+                {
                     index: '/myEvection',
                     iconClass: 'el-icon-suitcase',
                     title: '我的出差'
                 },
                 {
-                    index: '/myOvertime',
-                    iconClass: 'el-icon-s-flag',
-                    title: '我的加班'
+                    index: '/evectionManagement',
+                    iconClass: 'el-icon-suitcase',
+                    title: '出差管理'
                 },
                 {
                     index: '/account',

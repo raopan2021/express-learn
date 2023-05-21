@@ -3,11 +3,12 @@
     <el-table :data="tableData" width="100%" :header-cell-style="{ background: '#f3f6fd', color: '#555' }" border>
       <el-table-column prop="username" label="姓名"></el-table-column>
       <el-table-column prop="account" label="职工工号"></el-table-column>
-      <el-table-column prop="createtime" label="加班提交时间"></el-table-column>
-      <el-table-column prop="planstarttime" label="计划加班开始时间"></el-table-column>
-      <el-table-column prop="planendtime" label="计划加班结束时间"></el-table-column>
-      <el-table-column prop="endtime" label="加班结束时间"></el-table-column>
-      <el-table-column prop="hour" label="实际加班时长（小时）"></el-table-column>
+      <el-table-column prop="createtime" label="出差提交时间"></el-table-column>
+      <el-table-column prop="planstarttime" label="计划出差开始时间"></el-table-column>
+      <el-table-column prop="planendtime" label="计划出差结束时间"></el-table-column>
+      <el-table-column prop="planstarttime" label="出差开始时间"></el-table-column>
+      <el-table-column prop="endtime" label="出差结束时间"></el-table-column>
+      <el-table-column prop="day" label="实际出差天数"></el-table-column>
       <!-- <el-table-column prop="phone" label="电话"></el-table-column>
       <el-table-column prop="age" label="年龄"></el-table-column>
       <el-table-column prop="sex" label="性别"></el-table-column> -->
@@ -30,20 +31,19 @@ export default {
     }
   },
   beforeMount () {
-    this.$store.commit('setHeaderTitle',"我的加班");
-    this.getOvertimeList()
+    this.$store.commit('setHeaderTitle',"我的出差");
+    this.getEvectionList()
   },
   methods: {
-    getOvertimeList () {
+    getEvectionList () {
       let query = {
         account: this.$store.state.userInfo.account,
         currentPage: this.currentPage,
         pageSize: this.pageSize
       }
-      this.$axios.post('/overtime/getUserOvertimeList',query)
+      this.$axios.post('/evection/getUserEvectionList',query)
         .then(res => {
           if (res.data.status === 200) {
-            console.log(res);
             this.tableData = res.data.results;
             this.total = res.data.total;
           }
@@ -51,11 +51,11 @@ export default {
     },
     handleSizeChange (e) {
       this.pageSize = e;
-      this.getUserOvertimeList();
+      this.getUserEvectionList();
     },
     handleCurrentChange (e) {
       this.currentPage = e;
-      this.getUserOvertimeList();
+      this.getUserEvectionList();
     },
   },
 }

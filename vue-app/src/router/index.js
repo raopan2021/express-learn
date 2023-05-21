@@ -6,9 +6,15 @@ Vue.use(VueRouter);
 const routes = [
   {
     path: "/",
-    redirect: "/myAttendance",
+    redirect: "/userManage",
     component: () => import("../views/Main.vue"),
     children: [
+      {
+        // 个人首页
+        path: "/userManage",
+        name: "userManage",
+        component: () => import("../views/UserManage.vue"),
+      },
       {
         // 我的考勤
         path: "/myAttendance",
@@ -22,16 +28,28 @@ const routes = [
         component: () => import("../views/Attendance/AttendanceManagement.vue"),
       },
       {
-        // 我的考勤
-        path: "/myEvection",
-        name: "myEvection",
-        component: () => import("../views/MyEvection.vue"),
-      },
-      {
-        // 我的考勤
+        // 我的加班
         path: "/myOvertime",
         name: "myOvertime",
-        component: () => import("../views/MyOvertime.vue"),
+        component: () => import("../views/OverTime/MyOvertime.vue"),
+      },
+      {
+        // 加班管理
+        path: "/overtimeManagement",
+        name: "overtimeManagement",
+        component: () => import("../views/OverTime/OvertimeManagement.vue"),
+      },
+      {
+        // 我的出差
+        path: "/myEvection",
+        name: "myEvection",
+        component: () => import("../views/Evection/MyEvection.vue"),
+      },
+      {
+        // 出差管理
+        path: "/evectionManagement",
+        name: "evectionManagement",
+        component: () => import("../views/Evection/EvectionManagement.vue"),
       },
       {
         // 账号管理

@@ -58,40 +58,44 @@ exports.evectionList = (req,res) => {
 
 // 查询用户的出差记录分页
 exports.getUserEvectionList = (req,res) => {
-  console.log(req);
-  if (!req.body.account) return res.status(400).json("请求体中无账号account");
-  const account = req.body.account,
-    currentPage = req.body.currentPage,
-    pageSize = req.body.pageSize;
+  let account = ''
+  if (req.body.account) account = req.body.account
+  let searchUserName = ''
+  if (req.body.searchUserName) searchUserName = req.body.searchUserName
+  const pageSize = req.body.pageSize;
   // 从第n条开始
-  const start = (currentPage - 1) * pageSize;
-  const tableSql = `
+  const start = (req.body.currentPage - 1) * pageSize;
+  let tableSql = `
     select
       * , (TIMESTAMPDIFF(day,starttime,endtime) + 1) as day
     from
-      evection
-    where
-      account = ?
-    order by
-      createtime desc
-    limit ? , ? ;
+      evection `
+  if (account) {
+    tableSql += ` where account = ${account}`
+  }
+  if ( searchUserName != '') {
+    if (account) {
+      tableSql += ` and where username like "%${searchUserName}%"`
+    } else {
+      tableSql += ` where username like "%${searchUserName}%"`
+    }
+  }
+  tableSql += ` order by createtime desc
+    limit ${start} , ${pageSize} ;
   `;
-  const totalSql = `
-    select
-      count(*) as total
-    from
-      evection 
-    where
-      account = ? ;
-  `;
-  db.query(tableSql,[account,start,pageSize],(err,tableResults) => {
+
+  let totalSql = ` select count(*) as total from evection `;
+  if (account != '') {
+    totalSql += `where account = ${account}`
+  }
+  db.query(tableSql,(err,tableResults) => {
     if (err) return res.status(400).json(err);
-    db.query(totalSql,[account],(err,TotalResults) => {
+    db.query(totalSql,(err,totalResults) => {
       if (err) return res.status(400).json(err);
       res.json({
         status: 200,
         results: tableResults,
-        total: TotalResults[0].total
+        total: totalResults[0].total
       });
     });
   });
