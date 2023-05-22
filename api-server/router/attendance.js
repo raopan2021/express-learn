@@ -6,5 +6,6 @@ const attendanceHandler = require('../router_handler/attendance');
 router.post('/attendanceList',attendanceHandler.attendanceList);
 router.post('/getUserAttendanceByYearMonth',attendanceHandler.getUserAttendanceByYearMonth);
 router.post('/getUserAttendanceList',attendanceHandler.getUserAttendanceList);
+router.post('/getUserTodayAttendance',attendanceHandler.getUserTodayAttendance);
 
 module.exports = router;

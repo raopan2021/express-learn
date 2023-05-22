@@ -107,4 +107,24 @@ exports.getUserAttendanceList = (req,res) => {
   });
 };
 
+// 查询用户今天的考勤
+exports.getUserTodayAttendance = (req,res) => {
+  if (!req.body.account) return res.status(400).json("请求体中无账号account");
+  const account = req.body.account;
+  const sql = `
+    select * from attendance 
+    where account = "${account}" 
+    and TO_DAYS( time ) = TO_DAYS(NOW()) 
+    order by time
+  `;
+  console.log(sql);
+  db.query(sql,(err,tableResults) => {
+    if (err) return res.status(400).json(err);
+    res.json({
+      status: 200,
+      results: tableResults,
+    });
+  });
+};
+
 // 向第三方api获取节假日
