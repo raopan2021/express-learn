@@ -1,5 +1,11 @@
 <template>
   <div>
+    <div class="search" style="margin-bottom: 5px">
+      <el-input placeholder="请输入姓名" style="width: 200px" suffix-icon="el-icon-search" v-model="searchUserName"
+        @keyup.enter.native="handleSearch" clearable></el-input>
+      <el-button type="primary" style="margin-left: 5px" @click="handleSearch">搜索</el-button>
+      <el-button type="success" style="margin-left: 5px" @click="handleReset">重置</el-button>
+    </div>
     <el-table :data="tableData" width="100%" :header-cell-style="{ background: '#f3f6fd', color: '#555' }" border>
       <el-table-column prop="name" label="姓名"></el-table-column>
       <el-table-column prop="account" label="职工工号"></el-table-column>
@@ -19,6 +25,7 @@
 export default {
   data () {
     return {
+      searchUserName: '',
       tableData: [],
       total: 0, // 总数
       pageSize: 10, // 每页几条数据
@@ -32,6 +39,7 @@ export default {
   methods: {
     getAttendanceList () {
       let query = {
+        searchUserName: this.searchUserName,
         currentPage: this.currentPage,
         pageSize: this.pageSize
       }
@@ -46,11 +54,21 @@ export default {
     },
     handleSizeChange (e) {
       this.pageSize = e;
-      this.getUserAttendanceList();
+      this.getAttendanceList();
     },
     handleCurrentChange (e) {
       this.currentPage = e;
-      this.getUserAttendanceList();
+      this.getAttendanceList();
+    },
+
+    // 搜索
+    handleSearch () {
+      this.getAttendanceList()
+    },
+    // 重置按钮
+    handleReset () {
+      this.searchUserName = ''
+      this.getAttendanceList()
     },
   },
 }

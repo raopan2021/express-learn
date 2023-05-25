@@ -2,32 +2,25 @@ const db = require("../db/index");
 
 // 查询所有考勤记录
 exports.attendanceList = (req,res) => {
-  const currentPage = req.body.currentPage,
-    pageSize = req.body.pageSize;
+  console.log(req.body);
+  let searchUserName = ''
+  if (req.body.searchUserName) searchUserName = req.body.searchUserName
+  const pageSize = req.body.pageSize;
   // 从第n条开始
-  const start = (currentPage - 1) * pageSize;
-  const tableSql = `
-    select
-      a.time,
-      user.account,
-      user.name,
-      user.age,
-      user.sex,
-      user.phone,
-      user.level 
-    from
-      attendance as a
-      left join user on a.account = user.account
-      order by a.time desc
-    limit ? , ? ;
+  const start = (req.body.currentPage - 1) * pageSize;
+  let tableSql = ` select * from attendance `
+  if (searchUserName != '') {
+    tableSql += ` where name like "%${searchUserName}%"`
+  }
+  tableSql += ` order by time desc
+    limit ${start} , ${pageSize} ;
   `;
-  const totalSql = `
-    select
-      count(*) as total
-    from
-      attendance ; 
-    `;
-  db.query(tableSql,[start,pageSize],(err,tableResults) => {
+
+  let totalSql = ` select count(*) as total from attendance `;
+  if (searchUserName != '') {
+    totalSql += ` where name like "%${searchUserName}%"`
+  }
+  db.query(tableSql,(err,tableResults) => {
     if (err) return res.status(400).json(err);
     db.query(totalSql,(err,totalResults) => {
       if (err) return res.status(400).json(err);

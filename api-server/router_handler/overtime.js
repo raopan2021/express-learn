@@ -84,15 +84,17 @@ exports.getUserOvertimeList = (req,res) => {
     limit ${start} , ${pageSize} ;
   `;
 
-  console.log(tableSql);
-
   let totalSql = ` select count(*) as total from overtime `;
   if (account != '') {
     totalSql += ` where account = '${account}' ; `;
   }
-
-  console.log(totalSql);
-
+  if (searchUserName != '') {
+    if (account != '') {
+      totalSql += ` and where username like "%${searchUserName}%"`
+    } else {
+      totalSql += ` where username like "%${searchUserName}%"`
+    }
+  }
 
   db.query(tableSql,(err,tableResults) => {
     if (err) return res.status(400).json(err);
